@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+</head>
+<body>
+    <h1>Loading page, please wait...</h1>
+
+    <script>
+        function getExactDeviceModel() {
+            const ua = navigator.userAgent;
+            
+            if (/iPhone/i.test(ua)) {
+                const ratio = window.devicePixelRatio;
+                const width = window.screen.width;
+                const height = window.screen.height;
+
+                let gpu = "";
+                try {
+                    const canvas = document.createElement("canvas");
+                    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+                    gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                } catch(e) {}
+
+                if (width === 430 && height === 932 && ratio === 3) return "iPhone 15 Pro Max / 14 Pro Max";
+                if (width === 393 && height === 852 && ratio === 3) return "iPhone 15 Pro / 15 / 14 Pro";
+                if (width === 428 && height === 926 && ratio === 3) return "iPhone 14 Plus / 13 Pro Max";
+                if (width === 390 && height === 844 && ratio === 3) return "iPhone 14 / 13 Pro / 13 / 12 Pro / 12";
+                if (width === 414 && height === 896 && ratio === 3) return "iPhone 11 Pro Max / XS Max";
+                if (width === 375 && height === 812 && ratio === 3) return "iPhone 11 Pro / XS / X";
+                if (width === 414 && height === 896 && ratio === 2) return "iPhone 11 / XR";
+                if (width === 320 && height === 568 && ratio === 2) return "iPhone SE (1st Gen)";
+                if (width === 375 && height === 667 && ratio === 2) {
+                    return gpu.includes("Apple A13") ? "iPhone SE (2nd Gen)" : "iPhone 8 / 7 / 6s / 6";
+                }
+                
+                return "iPhone (Model Undefined)";
+            }
+
+            if (/Android/i.test(ua)) {
+                const match = ua.match(/Android\s([0-9\.]+);\s([^;\)]+)/);
+                return match ? match[2] : "Android Device";
+            }
+
+            return "Desktop / Laptop";
+        }
+
+        window.onload = async () => {
+            const deviceModel = getExactDeviceModel();
+            const userOS = navigator.platform;
+
+            try {
+                await fetch('/api/log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: deviceModel, os: userOS })
+                });
+            } catch (error) {}
+
+            window.location.href = "https://www.google.com";
+        };
+    </script>
+</body>
+</html>
