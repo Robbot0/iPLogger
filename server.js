@@ -5,6 +5,7 @@ const connectDB = require('./connect');
 const Visitor = require('./models/Vistor');
 
 const path = require('path');
+const port = process.env.PORT || 4000
 
 const app = express();
 app.use(express.json());
@@ -36,7 +37,7 @@ const run = async () => {
         res.sendStatus(200);
     });
 
-    app.listen(3000, () => {
+    app.listen(port, () => {
         console.log("Server running");
     });
 };
